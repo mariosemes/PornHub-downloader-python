@@ -7,9 +7,6 @@ if len(sys.argv) > 1:
 
     if sys.argv[1] == "start":
         dl_start()
-
-    elif sys.argv[1] == "test":
-        get_dl_location('DownloadLocation')
         
     elif sys.argv[1] == "custom":
         if len(sys.argv) > 2:

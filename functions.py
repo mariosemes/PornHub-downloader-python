@@ -7,20 +7,25 @@ import sqlite3
 import os
 from prettytable import PrettyTable
 from sqlite3 import Error
+from urllib import request
+from bs4 import BeautifulSoup
 
-############### FUNCTIONS
+##################################### FUNCTIONS
 
-# Database location
+##################################### Database location
 database = r"./database.db"
+
+
+##################################### CHECKINGS 
 
 def type_check(item):
     if item == "model":
         print ("Valid type (model) selected.")
     elif item == "pornstar":
         print ("Valid type (pornstar) selected.")
-    elif item == "channel":
+    elif item == "channels":
         print ("Valid type (channel) selected.")
-    elif item == "user":
+    elif item == "users":
         print ("Valid type (user) selected.")
     elif item == "playlist":
         print ("Valid type (playlist) selected.")
@@ -65,21 +70,59 @@ def ph_alive_check(url):
         print ("but the URL does not exist.")
         sys.exit()
 
-def dl_start():
-    conn = create_connection(database)
-    with conn:
-        print("downloading new items")
-        dl_all_new_items(conn)
-        print("downloading all items")
-        dl_all_items(conn)
+def add_check(name_check):
+    if name_check == "batch":
+        u_input = input("Please enter full path to the batch-file.txt (or c to cancel): ")
+        if u_input == "c":
+            print("Operation canceled.")
+        else:
+            with open(u_input, 'r') as input_file:
+                for line in input_file:
+                    line = line.strip()
+                    add_item(line)
 
+    else:
+        add_item(name_check)
+
+
+def get_item_name(item_type, url_item):
+    url = url_item
+    html = request.urlopen(url).read().decode('utf8')
+    html[:60]
+
+    soup = BeautifulSoup(html, 'html.parser')
+    if item_type == "model":
+        finder = soup.find(class_='nameSubscribe')
+        title = finder.find(itemprop='name').text.replace('\n','').strip()
+    elif item_type == "pornstar":
+        finder = soup.find(class_='nameSubscribe')
+        title = finder.find(itemprop='name').text.replace('\n','').strip()
+    elif item_type == "channels":
+        finder = soup.find(class_='bottomExtendedWrapper')
+        title = finder.find(class_='title').text.replace('\n','').strip()
+    elif item_type == "users":
+        finder = soup.find(class_='bottomInfoContainer')
+        title = finder.find('a', class_='float-left').text.replace('\n','').strip()
+    elif item_type == "playlist":
+        finder = soup.find(id='playlistTopHeader')
+        title = finder.find(id='watchPlaylist').text.replace('\n','').strip()
+    else:
+        print("No valid item type.")
+
+    return title
+
+##################################### DOWNLOADING
 
 def dl_all_items(conn):
 
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM ph_items")
+    c = conn.cursor()
+    try:
+        c.execute("SELECT * FROM ph_items")
+    except Error as e:
+        print(e)
+        sys.exit()
     
-    rows = cur.fetchall()
+    rows = c.fetchall()
  
     for row in rows:
         if row[1] == "model":
@@ -100,7 +143,7 @@ def dl_all_items(conn):
         print("-----------------------------")
 
         # Find more available options here: https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/YoutubeDL.py#L129-L279
-        outtmpl = get_dl_location('DownloadLocation') + '/' + str(row[1]) + '/' + str(row[2]) + '/%(title)s.%(ext)s'
+        outtmpl = get_dl_location('DownloadLocation') + '/' + str(row[1]) + '/' + str(row[3]) + '/%(title)s.%(ext)s'
         ydl_opts_start = {
             'format': 'best',
             'playliststart:': 1,
@@ -115,15 +158,24 @@ def dl_all_items(conn):
         with youtube_dl.YoutubeDL(ydl_opts_start) as ydl:
             ydl.download([url])
 
-        cur.execute("UPDATE ph_items SET lastchecked=CURRENT_TIMESTAMP WHERE name = ?", (row[2],))
+        try:
+            c.execute("UPDATE ph_items SET lastchecked=CURRENT_TIMESTAMP WHERE url_name = ?", (row[2],))
+            conn.commit()
+        except Error as e:
+            print(e)
+            sys.exit()
 
 
 def dl_all_new_items(conn):
 
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM ph_items WHERE new='1'")
-    
-    rows = cur.fetchall()
+    c = conn.cursor()
+    try:
+        c.execute("SELECT * FROM ph_items WHERE new='1'")
+    except Error as e:
+        print(e)
+        sys.exit()
+
+    rows = c.fetchall()
  
     for row in rows:
         
@@ -145,7 +197,7 @@ def dl_all_new_items(conn):
         print("-----------------------------")
 
         # Find more available options here: https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/YoutubeDL.py#L129-L279
-        outtmpl = get_dl_location('DownloadLocation') + '/' + str(row[1]) + '/' + str(row[2]) + '/%(title)s.%(ext)s'
+        outtmpl = get_dl_location('DownloadLocation') + '/' + str(row[1]) + '/' + str(row[3]) + '/%(title)s.%(ext)s'
         ydl_opts = {
             'format': 'best',
             'outtmpl': outtmpl,
@@ -158,8 +210,21 @@ def dl_all_new_items(conn):
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        cur.execute("UPDATE ph_items SET new='0', lastchecked=CURRENT_TIMESTAMP WHERE name = ?", (row[2],))
+        try:
+            c.execute("UPDATE ph_items SET new='0', lastchecked=CURRENT_TIMESTAMP WHERE url_name=?", (row[2],))
+            conn.commit()
+        except Error as e:
+            print(e)
+            sys.exit()
+    
 
+def dl_start():
+    conn = create_connection(database)
+    with conn:
+        print("downloading new items")
+        dl_all_new_items(conn)
+        print("downloading all items")
+        dl_all_items(conn)
 
 def custom_dl(url):
     ph_url_check(url)
@@ -167,42 +232,34 @@ def custom_dl(url):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
 
-def add_check(name_check):
-    if name_check == "batch":
-        u_input = input("Please enter full path to the batch-file.txt (or c to cancel): ")
-        if u_input == "c":
-            print("Operation canceled.")
-        else:
-            with open(u_input, 'r') as input_file:
-                for line in input_file:
-                    line = line.strip()
-                    add_item(line)
-
-    else:
-        add_item(name_check)
-
-
 def add_item(name_check):
     parsed = urlparse.urlparse(name_check)
     ph_url_check(name_check)
     ph_type_check(name_check)
     ph_alive_check(name_check)
     item_type = parsed.path.split('/')[1]
-    item_name = parsed.path.split('/')[2]
+    item_url_name = parsed.path.split('/')[2]
+    item_name = get_item_name(item_type, name_check)
     
     conn = create_connection(database)
-    cur = conn.cursor()
-    cur.execute("SELECT count(*) FROM ph_items WHERE name = ?", (item_name,))
-    data=cur.fetchone()[0]
+    c = conn.cursor()
+    try:
+        c.execute("SELECT count(*) FROM ph_items WHERE url_name = ?", (item_name,))
+    except Error as e:
+        print(e)
+        sys.exit()
+
+    data=c.fetchone()[0]
     if data==0:
         with conn:
-            item = (item_type, item_name, '1');
+            item = (item_type, item_url_name, item_name, '1');
             item_id = create_item(conn, item)
 
         print(item_name + " added to database.")
     else:
         print("Item already exists in database")
 
+##################################### DATABASE ORIENTED
 
 def create_connection(db_file):
     conn = None
@@ -214,32 +271,32 @@ def create_connection(db_file):
 
 
 def create_item(conn, item):
-    sql = ''' INSERT INTO ph_items(type,name,new)
-              VALUES(?,?,?) '''
-    cur = conn.cursor()
-    cur.execute(sql, item)
-    return cur.lastrowid
+    sql = ''' INSERT INTO ph_items(type,url_name,name,new)
+              VALUES(?,?,?,?) '''
+    c = conn.cursor()
+    c.execute(sql, item)
+    return c.lastrowid
 
 
 def select_all_items(conn, item):
-    cur = conn.cursor()
+    c = conn.cursor()
     if item == "all":
-        cur.execute("SELECT * FROM ph_items")
+        c.execute("SELECT * FROM ph_items")
     else:
-        cur.execute("SELECT * FROM ph_items WHERE type='" + item + "'")
+        c.execute("SELECT * FROM ph_items WHERE type='" + item + "'")
  
-    rows = cur.fetchall()
+    rows = c.fetchall()
  
-    t = PrettyTable(['Id.', 'Type', 'Name', 'Date created', 'Last checked', 'Url'])
+    t = PrettyTable(['Id.', 'Name', 'Type', 'Date created', 'Last checked', 'Url'])
     t.align['Id.'] = "l"
-    t.align['Type'] = "l"
     t.align['Name'] = "l"
+    t.align['Type'] = "l"
     t.align['Date created'] = "l"
     t.align['Last checked'] = "l"
     t.align['Url'] = "l"
     for row in rows:
         url = "https://www.pornhub.com/" + str(row[1]) + "/" + str(row[2])
-        t.add_row([row[0], row[1], row[2], row[4], row[5], url])
+        t.add_row([row[0], row[3], row[1], row[5], row[6], url])
     print(t)
 
 
@@ -252,8 +309,8 @@ def list_items(item):
 
 def delete_single_item(conn, id):
     sql = 'DELETE FROM ph_items WHERE id=?'
-    cur = conn.cursor()
-    cur.execute(sql, (id,))
+    c = conn.cursor()
+    c.execute(sql, (id,))
     conn.commit()
 
 
@@ -270,7 +327,6 @@ def create_config(conn, item):
     c.execute(sql, item)
     return c.lastrowid
 
-
 def prepare_config():
     conn = create_connection(database)
     u_input = input("Please enter the FULL PATH to your download location: ")
@@ -279,6 +335,7 @@ def prepare_config():
         item_id = create_config(conn, item)
 
 def check_for_database():
+    print("Running startup checks...")
     if os.path.exists(database) == True:
         print("Database exists.")
     else:
@@ -298,6 +355,7 @@ def create_tables():
     sql_create_items_table = """ CREATE TABLE IF NOT EXISTS ph_items (
                                         id integer PRIMARY KEY,
                                         type text,
+                                        url_name text,
                                         name text,
                                         new integer DEFAULT 1,
                                         datecreated DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -339,10 +397,12 @@ def get_dl_location(option):
     else:
         print("Error! somethings wrong with the query.")
 
+##################################### Lets do it baby
 
 def first_run():
     create_tables()
 
+##################################### MESSAGING
 
 def how_to_use(error):
     print("Error: " + error)
