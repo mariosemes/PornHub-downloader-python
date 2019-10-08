@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 ##################################### FUNCTIONS
 
 ##################################### Database location
-database = r"./database.db"
+database = "./database.db"
 
 
 ##################################### CHECKINGS 
@@ -259,6 +259,7 @@ def add_item(name_check):
     else:
         print("Item already exists in database")
 
+
 ##################################### DATABASE ORIENTED
 
 def create_connection(db_file):
@@ -327,12 +328,30 @@ def create_config(conn, item):
     c.execute(sql, item)
     return c.lastrowid
 
+
 def prepare_config():
     conn = create_connection(database)
     u_input = input("Please enter the FULL PATH to your download location: ")
     with conn:
         item = ('DownloadLocation', u_input)
         item_id = create_config(conn, item)
+
+
+def get_dl_location(option):
+    conn = create_connection(database)
+    if conn is not None:
+        c = conn.cursor()
+        c.execute("SELECT * FROM ph_settings WHERE option='" + option + "'")
+     
+        rows = c.fetchall()
+     
+        for row in rows:
+            dllocation = row[2]
+        return dllocation
+
+    else:
+        print("Error! somethings wrong with the query.")
+
 
 def check_for_database():
     print("Running startup checks...")
@@ -381,21 +400,6 @@ def create_tables():
     else:
         print("Error! cannot create the database connection.")
 
-
-def get_dl_location(option):
-    conn = create_connection(database)
-    if conn is not None:
-        c = conn.cursor()
-        c.execute("SELECT * FROM ph_settings WHERE option='" + option + "'")
-     
-        rows = c.fetchall()
-     
-        for row in rows:
-            dllocation = row[2]
-        return dllocation
-
-    else:
-        print("Error! somethings wrong with the query.")
 
 ##################################### Lets do it baby
 
