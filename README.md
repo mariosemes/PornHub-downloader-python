@@ -2,17 +2,17 @@
 
 [![GitHub Issues Open](https://github-basic-badges.herokuapp.com/issues/mariosemes/PornHub-downloader-python.svg)]()
 
-Feel free to join my discord server if you have any ideas, features or even bugs to talk about, you are welcome!
+Feel free to join my discord server if you have any ideas, features or even bugs to talk about, you are welcome! <br />
 [JOIN DISCORD](https://discord.gg/JV2NxhH)
 
-If you feel like it, you can donate me a beer or two ;) Just for the troubles!
+If you feel like it, you can donate me a beer or two ;) Just for the troubles! <br />
 [DONATE BUTTON](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7MTJVTTQM9YQE&source=url)
 
 # Installation
 
-Check what version of python you have: python --version
-Recommended & tested usage is with python3.
-Also, check if you have pip3 installed (apt install python3-pip).
+Check what version of python you have: python --version <br />
+Recommended & tested usage is with python3. <br />
+Also, check if you have pip3 installed (apt install python3-pip). <br />
 
 ```bash
 1. $ apt install python3
@@ -25,7 +25,8 @@ Also, check if you have pip3 installed (apt install python3-pip).
 8. $ cd PornHub-downloader-python-master
 9. $ python3 phdler.py
 ```
-It will ask you for your download folder PATH. Please enter your full path without the last backslash. Like this: /home/username/media/phmedia
+It will ask you for your download folder PATH. Please enter your full path without the last backslash. <br />
+Like this: /home/username/media/phmedia <br />
 On first run, phdler will create a database.db which will be used later for everything.
 
 
@@ -56,7 +57,7 @@ python3 phdler.py custom https://www.pornhub.com/view_video.php?viewkey=ph5d69a2
 or
 python3 phdler.py custom batch
 ```
-The batch option will ask you for the full path of your .txt file where you can import multiple URLs at once.
+The batch option will ask you for the full path of your .txt file where you can import multiple URLs at once. <br />
 Take care that every single URL in the .txt file is in his own row.
 
 ## ADD
@@ -73,7 +74,7 @@ python3 phdler.py add https://www.pornhub.com/playlist/30012401
 or
 python3 phdler.py add batch
 ```
-The batch option will ask you for the full path of your .txt file where you can import multiple URLs at once.
+The batch option will ask you for the full path of your .txt file where you can import multiple URLs at once. <br />
 Take care that every single URL in the .txt file is in his own row.
 
 ## LIST
@@ -114,7 +115,7 @@ This should not bother you... I just wanted to explain how it works.
 
 # Big thanks to
 
-YouTube-DL,
-PrettyTables,
-BS4 aka BeautifulSoup4 
+YouTube-DL <br />
+PrettyTables <br />
+BS4 aka BeautifulSoup4 <br />
 and of course, all of you :)
