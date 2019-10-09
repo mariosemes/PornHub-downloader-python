@@ -45,7 +45,21 @@ On first run, phdler will create a database.db which will be used later for ever
 
 ## Example
 
-To add a model/pornstar/channel/user/playlist, just type command "add URL":
+# START
+```bash
+python3 phdler.py start
+```
+
+# CUSTOM
+```bash
+python3 phdler.py custom https://www.pornhub.com/view_video.php?viewkey=ph5d69a2093729e
+or
+python3 phdler.py custom batch
+```
+The batch option will ask you for the full path of your .txt file where you can import multiple URLs at once.
+Take care that every single URL in the .txt file is in his own row.
+
+# ADD
 ```bash
 python3 phdler.py add https://www.pornhub.com/model/luxurygirl
 or
@@ -61,6 +75,35 @@ python3 phdler.py add batch
 ```
 The batch option will ask you for the full path of your .txt file where you can import multiple URLs at once.
 Take care that every single URL in the .txt file is in his own row.
+
+# LIST
+```bash
+python3 phdler.py list model
+or
+python3 phdler.py list pornstar
+or
+python3 phdler.py list channels
+or
+python3 phdler.py list users
+or
+python3 phdler.py list playlist
+or
+python3 phdler.py list all
+```
+
+# DELETE
+```bash
+python3 phdler.py delete model
+or
+python3 phdler.py delete pornstar
+or
+python3 phdler.py delete channels
+or
+python3 phdler.py delete users
+or
+python3 phdler.py delete playlist
+```
+The option DELETE will list the selected item type, list them from the database and give you an option to enter the item ID of which one you want to be deleted.
 
 
 ## Explained
