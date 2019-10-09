@@ -30,17 +30,18 @@ On first run, phdler will create a database.db which will be used later for ever
 
 
 ## Usage
+```bash
 
-+-------------------+---------+----------------------------------------------------------------------+
-| Tool              | command | item                                                                 |
-+-------------------+---------+----------------------------------------------------------------------+
-| python3 phdler.py | start   |                                                                      |
-| python3 phdler.py | custom  | url (full PornHub url) | batch (for .txt file)                       |
-| python3 phdler.py | add     | model | pornstar | channel | user | playlist | batch (for .txt file) |
-| python3 phdler.py | list    | model | pornstar | channel | user | playlist | all                   |
-| python3 phdler.py | delete  | model | pornstar | channel | user | playlist                         |
-+-------------------+---------+----------------------------------------------------------------------+
-
++-------------------+---------+------------------------------------------------------+
+| Tool              | command | item                                                 |
++-------------------+---------+------------------------------------------------------+
+| python3 phdler.py | start   |                                                      |
+| python3 phdler.py | custom  | url | batch                                          |
+| python3 phdler.py | add     | model | pornstar | channel | user | playlist | batch |
+| python3 phdler.py | list    | model | pornstar | channel | user | playlist | all   |
+| python3 phdler.py | delete  | model | pornstar | channel | user | playlist         |
++-------------------+---------+------------------------------------------------------+
+```
 
 ## Example
 
