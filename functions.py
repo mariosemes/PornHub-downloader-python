@@ -226,11 +226,38 @@ def dl_start():
         print("downloading all items")
         dl_all_items(conn)
 
-def custom_dl(url):
+
+def custom_dl(name_check):
+    if name_check == "batch":
+        u_input = input("Please enter full path to the batch-file.txt (or c to cancel): ")
+        if u_input == "c":
+            print("Operation canceled.")
+        else:
+            with open(u_input, 'r') as input_file:
+                for line in input_file:
+                    line = line.strip()
+                    custom_dl_download(line)
+
+    else:
+        custom_dl_download(name_check)
+
+
+def custom_dl_download(url):
     ph_url_check(url)
     ph_alive_check(url)
+
+    outtmpl = get_dl_location('DownloadLocation') + '/handpicked/%(title)s.%(ext)s'
+    ydl_opts = {
+        'format': 'best',
+        'outtmpl': outtmpl,
+        'nooverwrites': True,
+        'no_warnings': False,
+        'ignoreerrors': True,
+    }
+
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
+
 
 def add_item(name_check):
     parsed = urlparse.urlparse(name_check)
@@ -416,7 +443,7 @@ def how_to_use(error):
     t.align['command'] = "l"
     t.align['item'] = "l"
     t.add_row(['phdler', 'start', ''])
-    t.add_row(['phdler', 'custom', 'url (full PornHub url)'])
+    t.add_row(['phdler', 'custom', 'url (full PornHub url) | batch (for .txt file)'])
     t.add_row(['phdler', 'add', 'model | pornstar | channel | user | playlist | batch (for .txt file)'])
     t.add_row(['phdler', 'list', 'model | pornstar | channel | user | playlist | all'])
     t.add_row(['phdler', 'delete', 'model | pornstar | channel | user | playlist'])
@@ -430,7 +457,7 @@ def help_command():
     t.align['argument'] = "l"
     t.align['description'] = "l"
     t.add_row(['start', '', 'start the script'])
-    t.add_row(['custom', 'url', 'download a single video from PornHub'])
+    t.add_row(['custom', 'url | batch', 'download a single video from PornHub'])
     t.add_row(['add', 'model | pornstar | channel | user | playlist | batch (for .txt file)', 'adding item to database'])
     t.add_row(['list', 'model | pornstar | channel | user | playlist', 'list selected items from database'])
     t.add_row(['delete', 'model | pornstar | channel | user | playlist', 'delete selected items from database'])
