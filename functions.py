@@ -96,7 +96,7 @@ def get_item_name(item_type, url_item):
         title = finder.find(itemprop='name').text.replace('\n','').strip()
     elif item_type == "pornstar":
         finder = soup.find(class_='nameSubscribe')
-        title = finder.find(itemprop='name').text.replace('\n','').strip()
+        title = finder.find(class_='name').text.replace('\n','').strip()
     elif item_type == "channels":
         finder = soup.find(class_='bottomExtendedWrapper')
         title = finder.find(class_='title').text.replace('\n','').strip()
