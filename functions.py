@@ -150,6 +150,8 @@ def dl_all_items(conn):
             'playlistend': 4,
             'outtmpl': outtmpl,
             'nooverwrites': True,
+            'no_warnings': False,   
+            'ignoreerrors': True,
         }
 
         url = "https://www.pornhub.com/" + str(row[1]) + "/" + str(row[2] + url_after)
@@ -200,6 +202,8 @@ def dl_all_new_items(conn):
             'format': 'best',
             'outtmpl': outtmpl,
             'nooverwrites': True,
+            'no_warnings': False,   
+            'ignoreerrors': True,
         }
 
         url = "https://www.pornhub.com/" + str(row[1]) + "/" + str(row[2]) + url_after
@@ -247,6 +251,8 @@ def custom_dl_download(url):
         'format': 'best',
         'outtmpl': outtmpl,
         'nooverwrites': True,
+        'no_warnings': False,   
+        'ignoreerrors': True,
     }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
