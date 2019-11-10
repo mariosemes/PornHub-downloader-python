@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 import youtube_dl
 import requests
+import urlparse
 import sys
-import urllib.parse as urlparse
 import sqlite3
 import os
 from prettytable import PrettyTable
 from sqlite3 import Error
-from urllib import request
 from bs4 import BeautifulSoup
 
 ##################################### FUNCTIONS
@@ -72,7 +71,7 @@ def ph_alive_check(url):
 
 def add_check(name_check):
     if name_check == "batch":
-        u_input = input("Please enter full path to the batch-file.txt (or c to cancel): ")
+        u_input = raw_input("Please enter full path to the batch-file.txt (or c to cancel): ")
         if u_input == "c":
             print("Operation canceled.")
         else:
@@ -87,10 +86,10 @@ def add_check(name_check):
 
 def get_item_name(item_type, url_item):
     url = url_item
-    html = request.urlopen(url).read().decode('utf8')
-    html[:60]
+    html = requests.get(url)
+    html.encoding('utf8')
 
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = BeautifulSoup(html.text, 'html.parser')
     if item_type == "model":
         finder = soup.find(class_='nameSubscribe')
         title = finder.find(itemprop='name').text.replace('\n','').strip()
@@ -229,7 +228,7 @@ def dl_start():
 
 def custom_dl(name_check):
     if name_check == "batch":
-        u_input = input("Please enter full path to the batch-file.txt (or c to cancel): ")
+        u_input = raw_input("Please enter full path to the batch-file.txt (or c to cancel): ")
         if u_input == "c":
             print("Operation canceled.")
         else:
@@ -358,7 +357,7 @@ def create_config(conn, item):
 
 def prepare_config():
     conn = create_connection(database)
-    u_input = input("Please enter the FULL PATH to your download location: ")
+    u_input = raw_input("Please enter the FULL PATH to your download location: ")
     with conn:
         item = ('DownloadLocation', u_input)
         item_id = create_config(conn, item)

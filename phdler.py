@@ -26,7 +26,7 @@ def main():
             if len(sys.argv) > 2:
                 type_check(sys.argv[2])
                 list_items(sys.argv[2])
-                u_input = input("Please enter the ID to delete (or c to cancel): ")
+                u_input = raw_input("Please enter the ID to delete (or c to cancel): ")
                 if u_input == "c":
                     print("Operation canceled.")
                 else:
