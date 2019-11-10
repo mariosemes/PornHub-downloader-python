@@ -87,7 +87,7 @@ def add_check(name_check):
 def get_item_name(item_type, url_item):
     url = url_item
     html = requests.get(url)
-    html.encoding('utf8')
+    html.encoding = 'utf8'
 
     soup = BeautifulSoup(html.text, 'html.parser')
     if item_type == "model":
