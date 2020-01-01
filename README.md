@@ -2,9 +2,6 @@
 
 [![GitHub Issues Open](https://github-basic-badges.herokuapp.com/issues/mariosemes/PornHub-downloader-python.svg)]()
 
-Feel free to join my discord server if you have any ideas, features or even bugs to talk about, you are welcome! <br />
-[JOIN DISCORD](https://discord.gg/JV2NxhH)
-
 If you feel like it, you can donate me a beer or two ;) Just for the troubles! <br />
 [DONATE BUTTON](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7MTJVTTQM9YQE&source=url)
 
