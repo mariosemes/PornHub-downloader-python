@@ -1,0 +1,1 @@
+Update your youtube-dl to the latest version = 01-01-2020 and everything should work just fine again.
