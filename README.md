@@ -14,10 +14,10 @@ Also, check if you have pip3 installed (apt install python3-pip). <br />
 ```bash
 1. $ apt install python3
 2. $ apt install python3-pip
-3. $ pip3 install -r requirements.txt
-4. $ wget https://github.com/mariosemes/PornHub-downloader-python/archive/master.zip
-5. $ unzip master.zip
-6. $ cd PornHub-downloader-python-master
+3. $ wget https://github.com/mariosemes/PornHub-downloader-python/archive/master.zip
+4. $ unzip master.zip
+5. $ cd PornHub-downloader-python-master
+6. $ pip3 install -r requirements.txt
 7. $ python3 phdler.py
 ```
 It will ask you for your download folder PATH. Please enter your full path without the last backslash. <br />
