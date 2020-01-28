@@ -14,7 +14,7 @@ Also, check if you have pip3 installed (apt install python3-pip). <br />
 ```bash
 1. $ apt install python3
 2. $ apt install python3-pip
-3. $ pip3 install -r requirements
+3. $ pip3 install -r requirements.txt
 4. $ wget https://github.com/mariosemes/PornHub-downloader-python/archive/master.zip
 5. $ unzip master.zip
 6. $ cd PornHub-downloader-python-master
