@@ -37,11 +37,13 @@ def type_check(item):
 
 def ph_url_check(url):
     parsed = urlparse.urlparse(url)
-    if parsed.netloc == "www.pornhub.com":
-        print ("PornHub url validated.")
-    else:
-        print ("This is not a PornHub url.")
-        sys.exit()
+    regions = ["www", "cn", "cz", "de", "es", "fr", "it", "nl", "jp", "pt", "pl", "rt"]
+    for region in regions:
+        if parsed.netloc == region + ".pornhub.com":
+            print ("PornHub url validated.")
+            return
+    print ("This is not a PornHub url.")
+    sys.exit()
 
 def ph_type_check(url):
     parsed = urlparse.urlparse(url)
