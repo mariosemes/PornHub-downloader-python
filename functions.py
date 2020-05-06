@@ -65,7 +65,7 @@ def ph_type_check(url):
         sys.exit()
 
 def ph_alive_check(url):
-    request = requests.get(url, proxies={'https':get_dl_location('proxy')})
+    request = requests.get(url)
     if request.status_code == 200:
         print ("and the URL is existing.")
     else:
@@ -89,10 +89,6 @@ def add_check(name_check):
 
 def get_item_name(item_type, url_item):
     url = url_item
-    if get_dl_location('proxy'):
-        proxy = request.ProxyHandler({'https':get_dl_location('proxy')})
-        opener = request.build_opener(proxy,request.HTTPHandler)
-        request.install_opener(opener)
     html = request.urlopen(url).read().decode('utf8')
     html[:60]
 
@@ -152,7 +148,6 @@ def dl_all_items(conn):
         outtmpl = get_dl_location('DownloadLocation') + '/' + str(row[1]) + '/' + str(row[3]) + '/%(title)s.%(ext)s'
         ydl_opts_start = {
             'format': 'best',
-            'proxy': get_dl_location('proxy'),
             'playliststart:': 1,
             'playlistend': 4,
             'outtmpl': outtmpl,
@@ -207,7 +202,6 @@ def dl_all_new_items(conn):
         outtmpl = get_dl_location('DownloadLocation') + '/' + str(row[1]) + '/' + str(row[3]) + '/%(title)s.%(ext)s'
         ydl_opts = {
             'format': 'best',
-            'proxy': get_dl_location('proxy'),
             'outtmpl': outtmpl,
             'nooverwrites': True,
             'no_warnings': False,   
@@ -257,7 +251,6 @@ def custom_dl_download(url):
     outtmpl = get_dl_location('DownloadLocation') + '/handpicked/%(title)s.%(ext)s'
     ydl_opts = {
         'format': 'best',
-        'proxy': get_dl_location('proxy'),
         'outtmpl': outtmpl,
         'nooverwrites': True,
         'no_warnings': False,   
@@ -371,33 +364,6 @@ def prepare_config():
     with conn:
         item = ('DownloadLocation', u_input)
         item_id = create_config(conn, item)
-    while True:
-        p_input = input("Please enter the proxy address for your downloading location,leave blank to disable proxy(only https proxy is supported):")
-        if p_input:
-            try:
-                print('Confirming proxy.')
-                requests.get('https://www.pornhub.com/', proxies={"https":p_input})
-            except:
-                if input('Proxy connect failed,try again?(e.g. 127.0.0.1:1080)\n(Y/N)').upper() == 'Y':
-                    continue
-                else:
-                    with conn:
-                        p_item = ('proxy', '')
-                        p_item_id = create_config(conn, p_item)
-                    print('Disabled proxy')
-                    break
-            else:
-                with conn:
-                    p_item = ('proxy', p_input)
-                    p_item_id = create_config(conn, p_item)
-                print('Proxy set to {proxyaddr} successfully'.format(proxyaddr=p_input))
-                break
-        else:
-            with conn:
-                p_item = ('proxy', '')
-                p_item_id = create_config(conn, p_item)
-            print('Proxy disabled.')
-            break
 
 
 def get_dl_location(option):
