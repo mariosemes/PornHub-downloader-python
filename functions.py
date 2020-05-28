@@ -10,67 +10,68 @@ from sqlite3 import Error
 from urllib import request
 from bs4 import BeautifulSoup
 
-##################################### FUNCTIONS
-
-##################################### Database location
+# Database location
 database = "./database.db"
 
 
-##################################### CHECKINGS 
-
+# CHECKINGS
 def type_check(item):
     if item == "model":
-        print ("Valid type (model) selected.")
+        print("Valid type (model) selected.")
     elif item == "pornstar":
-        print ("Valid type (pornstar) selected.")
+        print("Valid type (pornstar) selected.")
     elif item == "channels":
-        print ("Valid type (channel) selected.")
+        print("Valid type (channel) selected.")
     elif item == "users":
-        print ("Valid type (user) selected.")
+        print("Valid type (user) selected.")
     elif item == "playlist":
-        print ("Valid type (playlist) selected.")
+        print("Valid type (playlist) selected.")
     elif item == "all":
-        print ("Valid type (all) selected.")
+        print("Valid type (all) selected.")
     else:
         how_to_use("Not a valid type.")
         sys.exit()
+
 
 def ph_url_check(url):
     parsed = urlparse.urlparse(url)
     regions = ["www", "cn", "cz", "de", "es", "fr", "it", "nl", "jp", "pt", "pl", "rt"]
     for region in regions:
         if parsed.netloc == region + ".pornhub.com":
-            print ("PornHub url validated.")
+            print("PornHub url validated.")
             return
-    print ("This is not a PornHub url.")
+    print("This is not a PornHub url.")
     sys.exit()
+
 
 def ph_type_check(url):
     parsed = urlparse.urlparse(url)
     if parsed.path.split('/')[1] == "model":
-        print ("This is a MODEL url,")
+        print("This is a MODEL url,")
     elif parsed.path.split('/')[1] == "pornstar":
-        print ("This is a PORNSTAR url,")
+        print("This is a PORNSTAR url,")
     elif parsed.path.split('/')[1] == "channels":
-        print ("This is a CHANNEL url,")
+        print("This is a CHANNEL url,")
     elif parsed.path.split('/')[1] == "users":
-        print ("This is a USER url,")
+        print("This is a USER url,")
     elif parsed.path.split('/')[1] == "playlist":
-        print ("This is a PLAYLIST url,")
+        print("This is a PLAYLIST url,")
     elif parsed.path.split('/')[1] == "view_video.php":
-        print ("This is a VIDEO url. Please paste a model/pornstar/user/channel/playlist url.")
+        print("This is a VIDEO url. Please paste a model/pornstar/user/channel/playlist url.")
         sys.exit()
     else:
-        print ("Somethings wrong with the url. Please check it out.")
+        print("Somethings wrong with the url. Please check it out.")
         sys.exit()
 
+
 def ph_alive_check(url):
-    request = requests.get(url)
-    if request.status_code == 200:
-        print ("and the URL is existing.")
+    requested = requests.get(url)
+    if requested.status_code == 200:
+        print("and the URL is existing.")
     else:
-        print ("but the URL does not exist.")
+        print("but the URL does not exist.")
         sys.exit()
+
 
 def add_check(name_check):
     if name_check == "batch":
@@ -90,47 +91,49 @@ def add_check(name_check):
 def get_item_name(item_type, url_item):
     url = url_item
     html = request.urlopen(url).read().decode('utf8')
-    html[:60]
+    html = html[:60]
 
     soup = BeautifulSoup(html, 'html.parser')
     if item_type == "model":
         finder = soup.find(class_='nameSubscribe')
-        title = finder.find(itemprop='name').text.replace('\n','').strip()
+        title = finder.find(itemprop='name').text.replace('\n', '').strip()
     elif item_type == "pornstar":
         finder = soup.find(class_='nameSubscribe')
-        title = finder.find(class_='name').text.replace('\n','').strip()
+        title = finder.find(class_='name').text.replace('\n', '').strip()
     elif item_type == "channels":
         finder = soup.find(class_='bottomExtendedWrapper')
-        title = finder.find(class_='title').text.replace('\n','').strip()
+        title = finder.find(class_='title').text.replace('\n', '').strip()
     elif item_type == "users":
         finder = soup.find(class_='bottomInfoContainer')
-        title = finder.find('a', class_='float-left').text.replace('\n','').strip()
+        title = finder.find('a', class_='float-left').text.replace('\n', '').strip()
     elif item_type == "playlist":
         finder = soup.find(id='playlistTopHeader')
-        title = finder.find(id='watchPlaylist').text.replace('\n','').strip()
+        title = finder.find(id='watchPlaylist').text.replace('\n', '').strip()
     else:
         print("No valid item type.")
+        title = False
 
     return title
 
+
 ##################################### DOWNLOADING
 
-def dl_all_items(conn):
 
+def dl_all_items(conn):
     c = conn.cursor()
     try:
         c.execute("SELECT * FROM ph_items")
     except Error as e:
         print(e)
         sys.exit()
-    
+
     rows = c.fetchall()
- 
+
     for row in rows:
         if row[1] == "model":
             url_after = "/videos/upload"
-        elif row[1] == "pornstar":
-            url_after = "/videos"
+        # elif row[1] == "pornstar":
+        #     url_after = "/"
         elif row[1] == "users":
             url_after = "/videos/public"
         elif row[1] == "channels":
@@ -152,7 +155,7 @@ def dl_all_items(conn):
             'playlistend': 4,
             'outtmpl': outtmpl,
             'nooverwrites': True,
-            'no_warnings': False,   
+            'no_warnings': False,
             'ignoreerrors': True,
         }
 
@@ -169,7 +172,6 @@ def dl_all_items(conn):
 
 
 def dl_all_new_items(conn):
-
     c = conn.cursor()
     try:
         c.execute("SELECT * FROM ph_items WHERE new='1'")
@@ -178,13 +180,13 @@ def dl_all_new_items(conn):
         sys.exit()
 
     rows = c.fetchall()
- 
+
     for row in rows:
-        
+
         if str(row[1]) == "model":
             url_after = "/videos/upload"
-        elif str(row[1]) == "pornstar":
-            url_after = "/videos"
+        # elif str(row[1]) == "pornstar":
+        #     url_after = "/videos"
         elif str(row[1]) == "users":
             url_after = "/videos/public"
         elif str(row[1]) == "channels":
@@ -204,7 +206,7 @@ def dl_all_new_items(conn):
             'format': 'best',
             'outtmpl': outtmpl,
             'nooverwrites': True,
-            'no_warnings': False,   
+            'no_warnings': False,
             'ignoreerrors': True,
         }
 
@@ -218,7 +220,7 @@ def dl_all_new_items(conn):
         except Error as e:
             print(e)
             sys.exit()
-    
+
 
 def dl_start():
     conn = create_connection(database)
@@ -253,7 +255,7 @@ def custom_dl_download(url):
         'format': 'best',
         'outtmpl': outtmpl,
         'nooverwrites': True,
-        'no_warnings': False,   
+        'no_warnings': False,
         'ignoreerrors': True,
     }
 
@@ -269,7 +271,7 @@ def add_item(name_check):
     item_type = parsed.path.split('/')[1]
     item_url_name = parsed.path.split('/')[2]
     item_name = get_item_name(item_type, name_check)
-    
+
     conn = create_connection(database)
     c = conn.cursor()
     try:
@@ -278,12 +280,11 @@ def add_item(name_check):
         print(e)
         sys.exit()
 
-    data=c.fetchone()[0]
-    if data==0:
+    data = c.fetchone()[0]
+    if data == 0:
         with conn:
-            item = (item_type, item_url_name, item_name, '1');
-            item_id = create_item(conn, item)
-
+            item = (item_type, item_url_name, item_name, '1')
+            create_item(conn, item)
         print(item_name + " added to database.")
     else:
         print("Item already exists in database")
@@ -314,9 +315,9 @@ def select_all_items(conn, item):
         c.execute("SELECT * FROM ph_items")
     else:
         c.execute("SELECT * FROM ph_items WHERE type='" + item + "'")
- 
+
     rows = c.fetchall()
- 
+
     t = PrettyTable(['Id.', 'Name', 'Type', 'Date created', 'Last checked', 'Url'])
     t.align['Id.'] = "l"
     t.align['Name'] = "l"
@@ -347,7 +348,7 @@ def delete_single_item(conn, id):
 def delete_item(item_id):
     conn = create_connection(database)
     with conn:
-        delete_single_item(conn, item_id);
+        delete_single_item(conn, item_id)
 
 
 def create_config(conn, item):
@@ -371,25 +372,23 @@ def get_dl_location(option):
     if conn is not None:
         c = conn.cursor()
         c.execute("SELECT * FROM ph_settings WHERE option='" + option + "'")
-     
         rows = c.fetchall()
-     
         for row in rows:
             dllocation = row[2]
         return dllocation
-
     else:
         print("Error! somethings wrong with the query.")
 
 
 def check_for_database():
     print("Running startup checks...")
-    if os.path.exists(database) == True:
+    if os.path.exists(database):
         print("Database exists.")
     else:
         print("Database does not exist.")
         print("Looks like this is your first time run...")
         first_run()
+
 
 def create_table(conn, create_table_sql):
     try:
@@ -399,7 +398,8 @@ def create_table(conn, create_table_sql):
     except Error as e:
         print(e)
 
-def create_tables(): 
+
+def create_tables():
     sql_create_items_table = """ CREATE TABLE IF NOT EXISTS ph_items (
                                         id integer PRIMARY KEY,
                                         type text,
@@ -416,10 +416,10 @@ def create_tables():
                                         setting text,
                                         datecreated DATETIME DEFAULT CURRENT_TIMESTAMP
                                     ); """
- 
+
     # create a database connection
     conn = create_connection(database)
- 
+
     # create tables
     if conn is not None:
         # create items table
@@ -435,7 +435,9 @@ def create_tables():
 def first_run():
     create_tables()
 
+
 ##################################### MESSAGING
+
 
 def how_to_use(error):
     print("Error: " + error)
@@ -451,6 +453,7 @@ def how_to_use(error):
     t.add_row(['phdler', 'delete', 'model | pornstar | channel | user | playlist'])
     print(t)
 
+
 def help_command():
     print("------------------------------------------------------------------")
     print("You asked for help, here it comes! Run phdler with these commands:")
@@ -460,7 +463,8 @@ def help_command():
     t.align['description'] = "l"
     t.add_row(['start', '', 'start the script'])
     t.add_row(['custom', 'url | batch', 'download a single video from PornHub'])
-    t.add_row(['add', 'model | pornstar | channel | user | playlist | batch (for .txt file)', 'adding item to database'])
+    t.add_row(
+        ['add', 'model | pornstar | channel | user | playlist | batch (for .txt file)', 'adding item to database'])
     t.add_row(['list', 'model | pornstar | channel | user | playlist', 'list selected items from database'])
     t.add_row(['delete', 'model | pornstar | channel | user | playlist', 'delete selected items from database'])
     print(t)
