@@ -91,9 +91,8 @@ def add_check(name_check):
 def get_item_name(item_type, url_item):
     url = url_item
     html = request.urlopen(url).read().decode('utf8')
-    html = html[:60]
+    soup = BeautifulSoup(html, 'lxml')
 
-    soup = BeautifulSoup(html, 'html.parser')
     if item_type == "model":
         finder = soup.find(class_='nameSubscribe')
         title = finder.find(itemprop='name').text.replace('\n', '').strip()
